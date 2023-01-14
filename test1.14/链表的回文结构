@@ -1,0 +1,109 @@
+解题思路：
+     方法一：借助赋值空间，因为题目说了链表节点个数不超过900，因此辅助空间大小是固定的，故空间复杂也是O(1)
+       1. 遍历链表，将链表中节点的值域放到数组中
+       2. 检测数组是否为回文结构
+﻿﻿﻿    方法二：
+       1. 找到链表的中间节点，然后从中间节点位置断开链表，形成两个链表A和B
+       2. 对后半部分B进行逆置
+       3. 从前往后遍历A和B，检测A和B中节点的值域是否都相同，相同就是回文结构，否则就不是
+       4. 再对后半部分进行逆置，将A和B拼接会之前的原链表﻿
+*/    
+
+public class PalindromeList {
+    public boolean chkPalindrome(ListNode A) {
+        
+        int[] array = new int[900];
+        ListNode cur = A;
+        int size = 0;
+        while(cur != null){
+            array[size++] = cur.val;
+            cur = cur.next;
+        }
+        
+        // 判断是否为回文结构
+        int left = 0;
+        int right = size-1;
+        while(left < right){
+            if(array[left] != array[right]){
+                return false;
+            }
+            
+            left++;
+            right--;
+        }
+        
+        return true;
+    }
+}
+*/
+ 
+ 
+public class PalindromeList {
+    public ListNode getMiddleNode(ListNode head){
+        ListNode fast = head;
+        ListNode slow = head;
+        // fast != null 为了保证fast第一步可以走成功
+        // fast.next ！= null 为了保证fast的第二步可以走成功
+        
+        // prev保存slow的前一个
+        ListNode prev = null;
+        while(fast != null && fast.next != null){
+            fast = fast.next.next;
+            prev = slow;
+            slow = slow.next;
+        }
+        
+        //if(fast == null){
+            //return prev;
+        //}
+        
+        return slow;
+    }
+    
+    public ListNode reverseList(ListNode head){
+        ListNode cur = head;
+        ListNode prev = null;
+        ListNode next = null;
+        
+        while(cur != null){
+            next = cur.next;
+            
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        
+        return prev;
+    }
+    
+    public boolean chkPalindrome(ListNode A) {
+        // 1. 找A链表的中间节点
+        ListNode mid = getMiddleNode(A);
+        ListNode B = mid.next;
+        mid.next = null;
+        
+        // 2. 对B链表进行逆置
+        B = reverseList(B);
+        
+        // 3 对A和B两个链表从前往后逐个节点进行比对
+        ListNode curA = A;
+        ListNode curB = B;
+        boolean ret = true;
+        // A链表
+        // B链表
+        while(curB != null){
+            if(curA.val != curB.val){
+                ret = false;
+                break;
+            }
+            
+            curA = curA.next;
+            curB = curB.next;
+        }
+        
+        B = reverseList(B);
+        mid.next = B;
+        return ret;
+    }
+}
+ 
